@@ -44,12 +44,15 @@ def main():
                     elif file_type(files) == 'MISC':
                         moved_to_path(src_path, os.path.join(misc_path, files))
 
+
 # Function for moving the file to desired path
 def moved_to_path(source_file, destination_file):
+    # Logs for files
     logging.basicConfig(filename='file_organizer.log', level=logging.INFO,
                         format='%(asctime)s - %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
-    dest_path = '/'.join(destination_file.split('/')[:-1]) + '/'
+    dest_path = os.path.abspath(destination_file)
+    # Creating a Folder if the Destination File Path does not exist
     if not os.path.exists(dest_path):
         os.mkdir(dest_path)
         print(f"the Path {dest_path} CREATED")
@@ -60,7 +63,9 @@ def moved_to_path(source_file, destination_file):
 
 # Function that will identify what is the file type
 def file_type(filename):
+    # Common Video file types
     video_type = ['mp4', 'avi', 'mkv', 'flv', 'webm', 'mov', 'swf', 'ogg', 'm4p', 'm4v']
+    # Common Picture type files
     picture_type = ['jpg', 'jpeg', 'gif', 'png', 'heic']
     type_of_file = filename.split('.').pop().lower()
     if type_of_file in video_type:
