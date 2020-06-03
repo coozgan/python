@@ -6,6 +6,7 @@ import logging
 
 
 def main():
+    # Determines the Desktop Directory on Unix Base System and Windows
     if is_windows():
         path_to_watch = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
     else:
@@ -13,38 +14,37 @@ def main():
             os.path.join(os.path.expanduser('~')), 'Desktop')
     before = dict([(f, None) for f in os.listdir(path_to_watch)])
     args = parse_args()
-    video_path = path_to_watch + '/Videos/'
-    picture_path = path_to_watch + '/Pictures/'
-    misc_path = path_to_watch + '/Misc/'
+    video_path = os.path.join(path_to_watch, 'Videos')
+    picture_path = os.path.join(path_to_watch, 'Pictures')
+    misc_path = os.path.join(path_to_watch, 'Misc')
 
+    # Assign my Parse Arguments
     if args.path:
         path_to_watch = args.path
-        path_to_watch = path_to_watch.rstrip('\\') + '\\' if is_windows() else path_to_watch.rstrip('/') + '/'
     if args.pic:
         picture_path = args.pic
-        picture_path = picture_path.rstrip('\\') + '\\' if is_windows() else picture_path.rstrip('/') + '/'
     if args.video:
         video_path = args.video
-        video_path = video_path.rstrip('\\') + '\\' if is_windows() else video_path.rstrip('/') + '/'
     if args.misc:
         misc_path = args.misc
-        misc_path = misc_path.rstrip('\\') + '\\' if is_windows() else misc_path.rstrip('/') + '/'
+
+    # The loop for event notification
     while 1:
         time.sleep(1)
         after = dict([(f, None) for f in os.listdir(path_to_watch)])
         added = [f for f in after if not f in before]
         if added:
             for files in added:
-                src_path = path_to_watch + '/' + files
+                src_path = os.path.join(path_to_watch, files)
                 if not os.path.isdir(src_path):
                     if file_type(files) == 'VIDEO':
-                        moved_to_path(src_path, video_path + files)
+                        moved_to_path(src_path, os.path.join(video_path, files))
                     elif file_type(files) == 'PICTURE':
-                        moved_to_path(src_path, picture_path + files)
+                        moved_to_path(src_path, os.path.join(picture_path, files))
                     elif file_type(files) == 'MISC':
-                        moved_to_path(src_path, misc_path + files)
+                        moved_to_path(src_path, os.path.join(misc_path, files))
 
-
+# Function for moving the file to desired path
 def moved_to_path(source_file, destination_file):
     logging.basicConfig(filename='file_organizer.log', level=logging.INFO,
                         format='%(asctime)s - %(message)s',
